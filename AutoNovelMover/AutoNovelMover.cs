@@ -214,7 +214,7 @@ namespace AutoNovelMover
                         continue;
                     }
 
-                    fileName = fileName.Substring(0, fileName.LastIndexOf(" "));
+                    fileName = fileName.Substring(0, lastIndex);
                     // 파일이름의 디렉토리 검색
                     DirectoryInfo searchDir = new DirectoryInfo(string.Format("{0}\\{1}", dirInfo.FullName, fileName));
                     if (searchDir.Exists == false)
