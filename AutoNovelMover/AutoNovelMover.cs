@@ -37,9 +37,12 @@ namespace AutoNovelMover
         /// <param name="e"></param>
         private void AutoNovelMover_Load(object sender, EventArgs e)
         {
-            // 뷰모드 - 디테일
             NovelListView.View = View.Details;
+            // 컬럼 전체 선택
+            NovelListView.FullRowSelect = true;
+            // 그리드라인 그리기
             NovelListView.GridLines = true;
+            NovelListView.MultiSelect = true;
 
             NovelListView.Columns.Add("번호", 40, HorizontalAlignment.Right);
             NovelListView.Columns.Add("파일명", 180, HorizontalAlignment.Left);
@@ -76,7 +79,7 @@ namespace AutoNovelMover
                             newItem.SubItems.Add(fileInfo.LastWriteTime.ToString());
                             NovelListView.Items.Add(newItem);
 
-                            novelFileInfos.Add(fileName, fileInfo);
+                            novelFileInfos.Add(fileInfo.Name, fileInfo);
                         }
                         else
                         {
@@ -231,6 +234,49 @@ namespace AutoNovelMover
 
                 working = false;
                 MessageBox.Show(string.Format("모든 소설을 [{0}] 폴더내에 각각 복사하였습니다.", dirInfo.FullName));
+            }
+        }
+
+        /// <summary>
+        /// 복사하려는 리스트 목록을 초기화 합니다.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClearBtn_Click(object sender, EventArgs e)
+        {
+            novelFileInfos.Clear();
+            NovelListView.Items.Clear();
+        }
+
+        /// <summary>
+        /// 리스트뷰에서 마우스 우클릭으로 아이템 제거처리
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NovelListView_MouseClick(object sender, MouseEventArgs e)
+        {
+            // 마우스 오른쪽 클릭
+            if (e.Button.Equals(MouseButtons.Right))
+            {
+                // 메뉴 생성
+                ContextMenu menu = new ContextMenu();
+                MenuItem removeItem = new MenuItem("삭제", (senders, es) =>
+                    {
+                        if (NovelListView.SelectedItems.Count > 0)
+                        {
+                            int count = NovelListView.SelectedItems.Count;
+                            for (int i = 0; i < count; ++i)
+                            {
+                                ListViewItem item = NovelListView.SelectedItems[0];
+                                novelFileInfos.Remove(item.SubItems[1].Text);
+                                NovelListView.SelectedItems[0].Remove();
+                            }
+                        }
+                    }
+                );
+
+                menu.MenuItems.Add(removeItem);
+                menu.Show(NovelListView, new Point(e.X, e.Y));
             }
         }
     }

@@ -35,6 +35,7 @@
             this.openFileDialog = new System.Windows.Forms.Button();
             this.AutoCopyStart = new System.Windows.Forms.Button();
             this.copyProgressBar = new System.Windows.Forms.ProgressBar();
+            this.ClearBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // NovelListView
@@ -42,12 +43,13 @@
             this.NovelListView.AllowDrop = true;
             this.NovelListView.Location = new System.Drawing.Point(0, 39);
             this.NovelListView.Name = "NovelListView";
-            this.NovelListView.Size = new System.Drawing.Size(468, 234);
+            this.NovelListView.Size = new System.Drawing.Size(466, 234);
             this.NovelListView.TabIndex = 0;
             this.NovelListView.UseCompatibleStateImageBehavior = false;
             this.NovelListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.NovelListView_DragDrop);
             this.NovelListView.DragOver += new System.Windows.Forms.DragEventHandler(this.NovelListView_DragOver);
             this.NovelListView.QueryContinueDrag += new System.Windows.Forms.QueryContinueDragEventHandler(this.NovelListView_QueryContinueDrag);
+            this.NovelListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.NovelListView_MouseClick);
             // 
             // label1
             // 
@@ -77,9 +79,9 @@
             // 
             // AutoCopyStart
             // 
-            this.AutoCopyStart.Location = new System.Drawing.Point(-1, 305);
+            this.AutoCopyStart.Location = new System.Drawing.Point(236, 305);
             this.AutoCopyStart.Name = "AutoCopyStart";
-            this.AutoCopyStart.Size = new System.Drawing.Size(469, 34);
+            this.AutoCopyStart.Size = new System.Drawing.Size(230, 34);
             this.AutoCopyStart.TabIndex = 4;
             this.AutoCopyStart.Text = "자동 복사 시작";
             this.AutoCopyStart.UseVisualStyleBackColor = true;
@@ -89,15 +91,26 @@
             // 
             this.copyProgressBar.Location = new System.Drawing.Point(0, 277);
             this.copyProgressBar.Name = "copyProgressBar";
-            this.copyProgressBar.Size = new System.Drawing.Size(468, 22);
+            this.copyProgressBar.Size = new System.Drawing.Size(466, 22);
             this.copyProgressBar.TabIndex = 5;
+            // 
+            // ClearBtn
+            // 
+            this.ClearBtn.Location = new System.Drawing.Point(0, 305);
+            this.ClearBtn.Name = "ClearBtn";
+            this.ClearBtn.Size = new System.Drawing.Size(230, 34);
+            this.ClearBtn.TabIndex = 6;
+            this.ClearBtn.Text = "목록 초기화";
+            this.ClearBtn.UseVisualStyleBackColor = true;
+            this.ClearBtn.Click += new System.EventHandler(this.ClearBtn_Click);
             // 
             // AutoNovelMover
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(468, 338);
+            this.ClientSize = new System.Drawing.Size(465, 338);
+            this.Controls.Add(this.ClearBtn);
             this.Controls.Add(this.copyProgressBar);
             this.Controls.Add(this.AutoCopyStart);
             this.Controls.Add(this.openFileDialog);
@@ -125,6 +138,7 @@
         private System.Windows.Forms.Button openFileDialog;
         private System.Windows.Forms.Button AutoCopyStart;
         private System.Windows.Forms.ProgressBar copyProgressBar;
+        private System.Windows.Forms.Button ClearBtn;
     }
 }
 
