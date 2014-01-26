@@ -227,9 +227,16 @@ namespace AutoNovelMover
                     }
 
                     string copyFile = string.Format("{0}\\{1}", searchDir.FullName, file.Name);
-                    // 소설을 타겟폴더로 복사합니다.
-                    File.SetAttributes(copyFile, FileAttributes.Normal);
-                    File.Copy(file.FullName, copyFile, true);
+                    try
+                    {
+                        // 소설을 타겟폴더로 복사합니다.
+                        File.Copy(file.FullName, copyFile, true);
+                        File.SetAttributes(copyFile, FileAttributes.Normal);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "복사 에러");
+                    }
 
                     // 진행률 표시
                     SetProgBar(currentCopyCount++);
