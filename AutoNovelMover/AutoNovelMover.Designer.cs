@@ -36,6 +36,7 @@
             this.AutoCopyStart = new System.Windows.Forms.Button();
             this.copyProgressBar = new System.Windows.Forms.ProgressBar();
             this.ClearBtn = new System.Windows.Forms.Button();
+            this.LogListview = new System.Windows.Forms.ListView();
             this.SuspendLayout();
             // 
             // NovelListView
@@ -79,7 +80,7 @@
             // 
             // AutoCopyStart
             // 
-            this.AutoCopyStart.Location = new System.Drawing.Point(236, 305);
+            this.AutoCopyStart.Location = new System.Drawing.Point(236, 409);
             this.AutoCopyStart.Name = "AutoCopyStart";
             this.AutoCopyStart.Size = new System.Drawing.Size(230, 34);
             this.AutoCopyStart.TabIndex = 4;
@@ -96,7 +97,7 @@
             // 
             // ClearBtn
             // 
-            this.ClearBtn.Location = new System.Drawing.Point(0, 305);
+            this.ClearBtn.Location = new System.Drawing.Point(0, 409);
             this.ClearBtn.Name = "ClearBtn";
             this.ClearBtn.Size = new System.Drawing.Size(230, 34);
             this.ClearBtn.TabIndex = 6;
@@ -104,12 +105,21 @@
             this.ClearBtn.UseVisualStyleBackColor = true;
             this.ClearBtn.Click += new System.EventHandler(this.ClearBtn_Click);
             // 
+            // LogListview
+            // 
+            this.LogListview.Location = new System.Drawing.Point(0, 305);
+            this.LogListview.Name = "LogListview";
+            this.LogListview.Size = new System.Drawing.Size(466, 98);
+            this.LogListview.TabIndex = 7;
+            this.LogListview.UseCompatibleStateImageBehavior = false;
+            // 
             // AutoNovelMover
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(465, 338);
+            this.ClientSize = new System.Drawing.Size(465, 445);
+            this.Controls.Add(this.LogListview);
             this.Controls.Add(this.ClearBtn);
             this.Controls.Add(this.copyProgressBar);
             this.Controls.Add(this.AutoCopyStart);
@@ -123,7 +133,7 @@
             this.MinimizeBox = false;
             this.Name = "AutoNovelMover";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AutoNovelMover v1.0";
+            this.Text = "AutoNovelMover v1.1";
             this.Load += new System.EventHandler(this.AutoNovelMover_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -139,6 +149,7 @@
         private System.Windows.Forms.Button AutoCopyStart;
         private System.Windows.Forms.ProgressBar copyProgressBar;
         private System.Windows.Forms.Button ClearBtn;
+        private System.Windows.Forms.ListView LogListview;
     }
 }
 

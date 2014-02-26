@@ -49,6 +49,14 @@ namespace AutoNovelMover
             NovelListView.Columns.Add("사이즈", 70, HorizontalAlignment.Right);
             NovelListView.Columns.Add("날짜", 170, HorizontalAlignment.Left);
 
+            // 로그창
+            LogListview.View = View.Details;
+            LogListview.FullRowSelect = false;
+            LogListview.GridLines = true;
+
+            LogListview.Columns.Add("번호", 40, HorizontalAlignment.Right);
+            LogListview.Columns.Add("예외사항", 420, HorizontalAlignment.Left);
+
             working = false;
         }
 
@@ -235,7 +243,9 @@ namespace AutoNovelMover
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "복사 에러");
+                        ListViewItem newItem = new ListViewItem((LogListview.Items.Count + 1).ToString());
+                        newItem.SubItems.Add(ex.Message);
+                        LogListview.Items.Add(newItem);
                     }
 
                     // 진행률 표시
@@ -256,6 +266,7 @@ namespace AutoNovelMover
         {
             novelFileInfos.Clear();
             NovelListView.Items.Clear();
+            LogListview.Items.Clear();
         }
 
         /// <summary>
