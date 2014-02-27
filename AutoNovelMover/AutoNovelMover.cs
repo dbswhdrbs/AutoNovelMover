@@ -74,24 +74,30 @@ namespace AutoNovelMover
                     NovelListView.BeginUpdate();
 
                     string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
                     foreach (string fileName in files)
                     {
-                        // 파일의 정보를 읽어온다.
-                        FileInfo fileInfo = new FileInfo(fileName);
-                        if (novelFileInfos.ContainsKey(fileName) == false)
+                        // 디렉토리면 디렉토리에 맞게 처리
+                        if (Directory.Exists(fileName))
                         {
-                            // 새로운 리스트 아이템 구성
-                            ListViewItem newItem = new ListViewItem((novelFileInfos.Count + 1).ToString());
-                            newItem.SubItems.Add(fileInfo.Name);
-                            newItem.SubItems.Add(GetFileSize(fileInfo.Length));
-                            newItem.SubItems.Add(fileInfo.LastWriteTime.ToString());
-                            NovelListView.Items.Add(newItem);
+                            string[] dirs = Directory.GetDirectories(fileName);
+                            // 폴더를 드래그앤드롭 한거면, 폴더내에 리스트를 리스트로 구성한다.
+                            if (dirs == null || dirs.Length == 0)
+                            {
+                                return;
+                            }
 
-                            novelFileInfos.Add(fileInfo.Name, fileInfo);
+                            foreach (var dirFolderName in dirs)
+                            {
+                                foreach (var file in Directory.GetFiles(dirFolderName))
+                                {
+                                    AddNovelItem(file);
+                                }
+                            }
                         }
-                        else
+                        else if (File.Exists(fileName)) // 파일이면 파일에 맞게 처리
                         {
-                            Console.WriteLine("같은파일을 중복해서 넣으려 하였습니다.");
+                            AddNovelItem(fileName);
                         }
                     }
 
@@ -101,6 +107,27 @@ namespace AutoNovelMover
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "리스트 구성 에러");
+            }
+        }
+
+        /// <summary>
+        /// 파일정보를 리스트로 구성합니다.
+        /// </summary>
+        /// <param name="fileName"></param>
+        private void AddNovelItem(string fileName)
+        {
+            // 파일의 정보를 읽어온다.
+            FileInfo fileInfo = new FileInfo(fileName);
+            if (novelFileInfos.ContainsKey(fileName) == false)
+            {
+                // 새로운 리스트 아이템 구성
+                ListViewItem newItem = new ListViewItem((novelFileInfos.Count + 1).ToString());
+                newItem.SubItems.Add(fileInfo.Name);
+                newItem.SubItems.Add(GetFileSize(fileInfo.Length));
+                newItem.SubItems.Add(fileInfo.LastWriteTime.ToString());
+                NovelListView.Items.Add(newItem);
+
+                novelFileInfos.Add(fileInfo.Name, fileInfo);
             }
         }
 
