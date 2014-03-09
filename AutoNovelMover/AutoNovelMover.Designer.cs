@@ -38,7 +38,6 @@
             this.ClearBtn = new System.Windows.Forms.Button();
             this.LogListview = new System.Windows.Forms.ListView();
             this.progressTitle = new System.Windows.Forms.Label();
-            this.progressText = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // NovelListView
@@ -94,7 +93,7 @@
             // 
             this.copyProgressBar.Location = new System.Drawing.Point(82, 279);
             this.copyProgressBar.Name = "copyProgressBar";
-            this.copyProgressBar.Size = new System.Drawing.Size(279, 22);
+            this.copyProgressBar.Size = new System.Drawing.Size(396, 22);
             this.copyProgressBar.TabIndex = 5;
             // 
             // ClearBtn
@@ -125,23 +124,12 @@
             this.progressTitle.TabIndex = 8;
             this.progressTitle.Text = "진행 사항 :";
             // 
-            // progressText
-            // 
-            this.progressText.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.progressText.Location = new System.Drawing.Point(367, 282);
-            this.progressText.Name = "progressText";
-            this.progressText.Size = new System.Drawing.Size(111, 19);
-            this.progressText.TabIndex = 9;
-            this.progressText.Text = "0 / 0 (0%)";
-            this.progressText.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // AutoNovelMover
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(491, 455);
-            this.Controls.Add(this.progressText);
             this.Controls.Add(this.progressTitle);
             this.Controls.Add(this.LogListview);
             this.Controls.Add(this.ClearBtn);
@@ -176,7 +164,6 @@
         private System.Windows.Forms.Button ClearBtn;
         private System.Windows.Forms.ListView LogListview;
         private System.Windows.Forms.Label progressTitle;
-        private System.Windows.Forms.Label progressText;
     }
 }
 

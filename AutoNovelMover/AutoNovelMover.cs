@@ -43,6 +43,7 @@ namespace AutoNovelMover
         private System.Threading.Thread copyThread;
         // 복사중인지 체크
         private bool working { get; set; }
+        private List<string> targetDirList = new List<string>();
 
         public AutoNovelMover()
         {
@@ -77,6 +78,7 @@ namespace AutoNovelMover
             LogListview.Columns.Add("예외사항", 420, HorizontalAlignment.Left);
 
             working = false;
+            copyProgressBar.Value = 0;
             // 복사 타겟폴더를 읽어옵니다.
             StringBuilder tmpRetVal = new StringBuilder(2000);
             GetPrivateProfileString("Folder", "SelectedPath", "", tmpRetVal, 2000, "./Parameter.ini");
@@ -138,8 +140,6 @@ namespace AutoNovelMover
                     // 자동 스크롤
                     NovelListView.Items[NovelListView.Items.Count - 1].EnsureVisible();
                     // 진행률에 현재 추가된 소설 수 갱신
-                    progressText.Text = string.Format("0 / {0} (0%)", novelFileInfos.Count);
-
                     RefreshFormTitle();
                 }
             }
@@ -254,6 +254,11 @@ namespace AutoNovelMover
                 {
                     // 진행률의 최대값을 복사하려는 파일의 갯수로 지정
                     copyProgressBar.Maximum = novelFileInfos.Count;
+                    targetDirList.Clear();
+                    for (int i = 0; i < NovelListView.Items.Count; ++i)
+                    {
+                        targetDirList.Add(NovelListView.Items[i].SubItems[2].Text);
+                    }
                     // 복사 쓰레드 시작
                     copyThread = new Thread(new ThreadStart(ProgressCopy));
                     copyThread.Start();
@@ -289,8 +294,7 @@ namespace AutoNovelMover
             else
             {
                 copyProgressBar.Value = value;
-                progressText.Text = string.Format("{0} / {1} ({2}%)", value, novelFileInfos.Count,
-                    (int)((float)value / (float)novelFileInfos.Count * 100f));
+                RefreshFormTitle();
             }
         }
 
@@ -314,8 +318,7 @@ namespace AutoNovelMover
                 foreach (var file in novelFileInfos.Values)
                 {
                     // 파일이름의 디렉토리 검색
-                    DirectoryInfo searchDir = new DirectoryInfo(string.Format("{0}\\{1}", dirInfo.FullName,
-                        NovelListView.Items[currentCopyCount - 1].SubItems[2].Text));
+                    DirectoryInfo searchDir = new DirectoryInfo(string.Format("{0}\\{1}", dirInfo.FullName, targetDirList[currentCopyCount - 1]));
                     if (searchDir.Exists == false)
                     {
                         // 폴더 생성
@@ -354,11 +357,13 @@ namespace AutoNovelMover
         /// <param name="e"></param>
         private void ClearBtn_Click(object sender, EventArgs e)
         {
+            if (working) { return; }
+
             novelFileInfos.Clear();
             NovelListView.Items.Clear();
             LogListview.Items.Clear();
 
-            progressText.Text = "0 / 0 (0%)";
+            RefreshFormTitle();
         }
 
         /// <summary>
@@ -368,6 +373,8 @@ namespace AutoNovelMover
         /// <param name="e"></param>
         private void NovelListView_MouseClick(object sender, MouseEventArgs e)
         {
+            if (working) { return; }
+
             // 마우스 오른쪽 클릭
             if (e.Button.Equals(MouseButtons.Right))
             {
@@ -407,8 +414,9 @@ namespace AutoNovelMover
                             }
 
                             RefreshNovelNumber();
+                            RefreshFormTitle();
                             // 진행률에 현재 추가된 소설 수 갱신
-                            progressText.Text = string.Format("0 / {0} (0%)", novelFileInfos.Count);
+                            RefreshFormTitle();
                         }
                     }
                 );
@@ -435,8 +443,9 @@ namespace AutoNovelMover
         void RefreshFormTitle()
         {
             long totalLength = novelFileInfos.Sum(x => x.Value.Length);
-            Text = string.Format("AutoNovelMover {0} - Files : {1}, Size : {2}", Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                novelFileInfos.Count, GetFileSize(totalLength));
+            int novelProgressCounter = novelFileInfos.Count > 0 ? (int)((float)copyProgressBar.Value / (float)novelFileInfos.Count * 100f) : 0;
+            Text = string.Format("AutoNovelMover {0} - Files : {1} / {2} ({3}%), Size : {4}", Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                copyProgressBar.Value, novelFileInfos.Count, novelProgressCounter, GetFileSize(totalLength));
         }
 
         private void AutoNovelMover_FormClosing(object sender, FormClosingEventArgs e)
