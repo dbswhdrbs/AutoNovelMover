@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Reflection;
 
 namespace AutoNovelMover
 {
@@ -80,6 +81,8 @@ namespace AutoNovelMover
             StringBuilder tmpRetVal = new StringBuilder(2000);
             GetPrivateProfileString("Folder", "SelectedPath", "", tmpRetVal, 2000, "./Parameter.ini");
             targetDir.Text = tmpRetVal.ToString();
+
+            RefreshFormTitle();
         }
 
         /// <summary>
@@ -136,6 +139,8 @@ namespace AutoNovelMover
                     NovelListView.Items[NovelListView.Items.Count - 1].EnsureVisible();
                     // 진행률에 현재 추가된 소설 수 갱신
                     progressText.Text = string.Format("0 / {0} (0%)", novelFileInfos.Count);
+
+                    RefreshFormTitle();
                 }
             }
             catch (Exception ex)
@@ -422,6 +427,16 @@ namespace AutoNovelMover
             {
                 NovelListView.Items[i].SubItems[0].Text = (i + 1).ToString();
             }
+        }
+
+        /// <summary>
+        /// 폼 타이틀에 정보를 갱신합니다.
+        /// </summary>
+        void RefreshFormTitle()
+        {
+            long totalLength = novelFileInfos.Sum(x => x.Value.Length);
+            Text = string.Format("AutoNovelMover {0} - Files : {1}, Size : {2}", Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                novelFileInfos.Count, GetFileSize(totalLength));
         }
 
         private void AutoNovelMover_FormClosing(object sender, FormClosingEventArgs e)
