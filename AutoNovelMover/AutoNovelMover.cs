@@ -108,7 +108,12 @@ namespace AutoNovelMover
                             // 폴더를 드래그앤드롭 한거면, 폴더내에 리스트를 리스트로 구성한다.
                             if (dirs == null || dirs.Length == 0)
                             {
-                                return;
+                                foreach (var file in Directory.GetFiles(fileName))
+                                {
+                                    AddNovelItem(file);
+                                }
+
+                                continue;
                             }
 
                             foreach (var dirFolderName in dirs)
@@ -126,6 +131,7 @@ namespace AutoNovelMover
                     }
 
                     NovelListView.EndUpdate();
+                    RefreshNovelNumber();
                     // 자동 스크롤
                     NovelListView.Items[NovelListView.Items.Count - 1].EnsureVisible();
                     // 진행률에 현재 추가된 소설 수 갱신
@@ -293,21 +299,18 @@ namespace AutoNovelMover
             if (dirInfo.Exists)
             {
                 int currentCopyCount = 1;
+                if (NovelListView.Items.Count != novelFileInfos.Values.Count)
+                {
+                    working = false;
+                    MessageBox.Show("소설 요소의 구성정보가 잘못되었습니다.");
+                    return;
+                }
+
                 foreach (var file in novelFileInfos.Values)
                 {
-                    // 파일확장자를 제외한 파일이름만 추출
-                    string fileName = file.Name.Substring(0, file.Name.Length - file.Extension.Length);
-                    int lastIndex = fileName.LastIndexOf(" ");
-                    // 예외처리
-                    if (lastIndex == -1)
-                    {
-                        currentCopyCount++;
-                        continue;
-                    }
-
-                    fileName = fileName.Substring(0, lastIndex);
                     // 파일이름의 디렉토리 검색
-                    DirectoryInfo searchDir = new DirectoryInfo(string.Format("{0}\\{1}", dirInfo.FullName, fileName));
+                    DirectoryInfo searchDir = new DirectoryInfo(string.Format("{0}\\{1}", dirInfo.FullName,
+                        NovelListView.Items[currentCopyCount - 1].SubItems[2].Text));
                     if (searchDir.Exists == false)
                     {
                         // 폴더 생성
@@ -365,7 +368,28 @@ namespace AutoNovelMover
             {
                 // 메뉴 생성
                 ContextMenu menu = new ContextMenu();
-                MenuItem removeItem = new MenuItem("삭제", (senders, es) =>
+                // 특정 요소의 복사할 폴더수정
+                MenuItem changeDir = new MenuItem("폴더 수정", (senders, es) =>
+                {
+                    if (NovelListView.SelectedItems.Count > 0)
+                    {
+                        string tmpChangeName = NovelListView.SelectedItems[0].SubItems[2].Text;
+                        if (InputBox.Show("폴더 수정", "수정할 폴더명을 입력해 주세요.", ref tmpChangeName) == System.Windows.Forms.DialogResult.OK)
+                        {
+                            int count = NovelListView.SelectedItems.Count;
+                            for (int i = 0; i < count; ++i)
+                            {
+                                ListViewItem changeItem = NovelListView.SelectedItems[i];
+                                changeItem.SubItems[2].Text = tmpChangeName;
+                            }
+                        }
+                    }
+                }
+                );
+                menu.MenuItems.Add(changeDir);
+
+                // 특정 요소를 삭제
+                MenuItem removeItem = new MenuItem("파일 삭제", (senders, es) =>
                     {
                         if (NovelListView.SelectedItems.Count > 0)
                         {
@@ -376,12 +400,27 @@ namespace AutoNovelMover
                                 novelFileInfos.Remove(item.SubItems[1].Text);
                                 NovelListView.SelectedItems[0].Remove();
                             }
+
+                            RefreshNovelNumber();
+                            // 진행률에 현재 추가된 소설 수 갱신
+                            progressText.Text = string.Format("0 / {0} (0%)", novelFileInfos.Count);
                         }
                     }
                 );
-
                 menu.MenuItems.Add(removeItem);
+                // 메뉴 생성
                 menu.Show(NovelListView, new Point(e.X, e.Y));
+            }
+        }
+
+        /// <summary>
+        /// 소설 리스트뷰의 번호를 갱신합니다.
+        /// </summary>
+        void RefreshNovelNumber()
+        {
+            for (int i = 0; i < NovelListView.Items.Count; ++i)
+            {
+                NovelListView.Items[i].SubItems[0].Text = (i + 1).ToString();
             }
         }
 

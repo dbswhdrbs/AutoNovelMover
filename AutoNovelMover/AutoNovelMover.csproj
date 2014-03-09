@@ -124,6 +124,7 @@
     <Compile Include="AutoNovelMover.Designer.cs">
       <DependentUpon>AutoNovelMover.cs</DependentUpon>
     </Compile>
+    <Compile Include="InputBox.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AutoNovelMover.resx">

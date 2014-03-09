@@ -157,7 +157,7 @@
             this.MinimizeBox = false;
             this.Name = "AutoNovelMover";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AutoNovelMover v1.3";
+            this.Text = "AutoNovelMover v1.4";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AutoNovelMover_FormClosing);
             this.Load += new System.EventHandler(this.AutoNovelMover_Load);
             this.ResumeLayout(false);
