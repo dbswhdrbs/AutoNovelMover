@@ -37,12 +37,14 @@
             this.copyProgressBar = new System.Windows.Forms.ProgressBar();
             this.ClearBtn = new System.Windows.Forms.Button();
             this.LogListview = new System.Windows.Forms.ListView();
+            this.progressTitle = new System.Windows.Forms.Label();
+            this.progressText = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // NovelListView
             // 
             this.NovelListView.AllowDrop = true;
-            this.NovelListView.Location = new System.Drawing.Point(0, 39);
+            this.NovelListView.Location = new System.Drawing.Point(13, 41);
             this.NovelListView.Name = "NovelListView";
             this.NovelListView.Size = new System.Drawing.Size(466, 234);
             this.NovelListView.TabIndex = 0;
@@ -70,9 +72,9 @@
             // 
             // openFileDialog
             // 
-            this.openFileDialog.Location = new System.Drawing.Point(389, 13);
+            this.openFileDialog.Location = new System.Drawing.Point(389, 12);
             this.openFileDialog.Name = "openFileDialog";
-            this.openFileDialog.Size = new System.Drawing.Size(66, 19);
+            this.openFileDialog.Size = new System.Drawing.Size(89, 23);
             this.openFileDialog.TabIndex = 3;
             this.openFileDialog.Text = "폴더 찾기";
             this.openFileDialog.UseVisualStyleBackColor = true;
@@ -80,7 +82,7 @@
             // 
             // AutoCopyStart
             // 
-            this.AutoCopyStart.Location = new System.Drawing.Point(236, 409);
+            this.AutoCopyStart.Location = new System.Drawing.Point(249, 411);
             this.AutoCopyStart.Name = "AutoCopyStart";
             this.AutoCopyStart.Size = new System.Drawing.Size(230, 34);
             this.AutoCopyStart.TabIndex = 4;
@@ -90,14 +92,14 @@
             // 
             // copyProgressBar
             // 
-            this.copyProgressBar.Location = new System.Drawing.Point(0, 277);
+            this.copyProgressBar.Location = new System.Drawing.Point(82, 279);
             this.copyProgressBar.Name = "copyProgressBar";
-            this.copyProgressBar.Size = new System.Drawing.Size(466, 22);
+            this.copyProgressBar.Size = new System.Drawing.Size(279, 22);
             this.copyProgressBar.TabIndex = 5;
             // 
             // ClearBtn
             // 
-            this.ClearBtn.Location = new System.Drawing.Point(0, 409);
+            this.ClearBtn.Location = new System.Drawing.Point(13, 411);
             this.ClearBtn.Name = "ClearBtn";
             this.ClearBtn.Size = new System.Drawing.Size(230, 34);
             this.ClearBtn.TabIndex = 6;
@@ -107,18 +109,40 @@
             // 
             // LogListview
             // 
-            this.LogListview.Location = new System.Drawing.Point(0, 305);
+            this.LogListview.Location = new System.Drawing.Point(13, 307);
             this.LogListview.Name = "LogListview";
             this.LogListview.Size = new System.Drawing.Size(466, 98);
             this.LogListview.TabIndex = 7;
             this.LogListview.UseCompatibleStateImageBehavior = false;
+            // 
+            // progressTitle
+            // 
+            this.progressTitle.AutoSize = true;
+            this.progressTitle.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.progressTitle.Location = new System.Drawing.Point(11, 285);
+            this.progressTitle.Name = "progressTitle";
+            this.progressTitle.Size = new System.Drawing.Size(65, 12);
+            this.progressTitle.TabIndex = 8;
+            this.progressTitle.Text = "진행 사항 :";
+            // 
+            // progressText
+            // 
+            this.progressText.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.progressText.Location = new System.Drawing.Point(367, 282);
+            this.progressText.Name = "progressText";
+            this.progressText.Size = new System.Drawing.Size(111, 19);
+            this.progressText.TabIndex = 9;
+            this.progressText.Text = "0 / 0 (0%)";
+            this.progressText.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // AutoNovelMover
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(465, 445);
+            this.ClientSize = new System.Drawing.Size(491, 455);
+            this.Controls.Add(this.progressText);
+            this.Controls.Add(this.progressTitle);
             this.Controls.Add(this.LogListview);
             this.Controls.Add(this.ClearBtn);
             this.Controls.Add(this.copyProgressBar);
@@ -133,7 +157,8 @@
             this.MinimizeBox = false;
             this.Name = "AutoNovelMover";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AutoNovelMover v1.2";
+            this.Text = "AutoNovelMover v1.3";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AutoNovelMover_FormClosing);
             this.Load += new System.EventHandler(this.AutoNovelMover_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -150,6 +175,8 @@
         private System.Windows.Forms.ProgressBar copyProgressBar;
         private System.Windows.Forms.Button ClearBtn;
         private System.Windows.Forms.ListView LogListview;
+        private System.Windows.Forms.Label progressTitle;
+        private System.Windows.Forms.Label progressText;
     }
 }
 

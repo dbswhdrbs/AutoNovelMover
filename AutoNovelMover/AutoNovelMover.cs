@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,6 +15,23 @@ namespace AutoNovelMover
 {
     public partial class AutoNovelMover : Form
     {
+        // ---- ini 파일 의 읽고 쓰기를 위한 API 함수 선언 ----
+        [DllImport("kernel32.dll")]
+        private static extern int GetPrivateProfileString(    // ini Read 함수
+                    String section,
+                    String key,
+                    String def,
+                    StringBuilder retVal,
+                    int size,
+                    String filePath);
+
+        [DllImport("kernel32.dll")]
+        private static extern long WritePrivateProfileString(  // ini Write 함수
+                    String section,
+                    String key,
+                    String val,
+                    String filePath);
+
         /// <summary>
         /// 소설의 파일정보를 저장해 놓는다.
         /// </summary>
@@ -46,8 +64,8 @@ namespace AutoNovelMover
 
             NovelListView.Columns.Add("번호", 40, HorizontalAlignment.Right);
             NovelListView.Columns.Add("파일명", 180, HorizontalAlignment.Left);
+            NovelListView.Columns.Add("복사(생성)될 폴더명", 155, HorizontalAlignment.Left);
             NovelListView.Columns.Add("사이즈", 70, HorizontalAlignment.Right);
-            NovelListView.Columns.Add("날짜", 170, HorizontalAlignment.Left);
 
             // 로그창
             LogListview.View = View.Details;
@@ -58,6 +76,10 @@ namespace AutoNovelMover
             LogListview.Columns.Add("예외사항", 420, HorizontalAlignment.Left);
 
             working = false;
+            // 복사 타겟폴더를 읽어옵니다.
+            StringBuilder tmpRetVal = new StringBuilder(2000);
+            GetPrivateProfileString("Folder", "SelectedPath", "", tmpRetVal, 2000, "./Parameter.ini");
+            targetDir.Text = tmpRetVal.ToString();
         }
 
         /// <summary>
@@ -102,6 +124,8 @@ namespace AutoNovelMover
                     }
 
                     NovelListView.EndUpdate();
+
+                    progressText.Text = string.Format("0 / {0} (0%)", novelFileInfos.Count);
                 }
             }
             catch (Exception ex)
@@ -123,8 +147,14 @@ namespace AutoNovelMover
                 // 새로운 리스트 아이템 구성
                 ListViewItem newItem = new ListViewItem((novelFileInfos.Count + 1).ToString());
                 newItem.SubItems.Add(fileInfo.Name);
+                // 파일확장자를 제외한 파일이름만 추출
+                string folderMame = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
+                int lastIndex = folderMame.LastIndexOf(" ");
+                folderMame = folderMame.Substring(0, lastIndex);
+                // 복사될 폴더이름
+                newItem.SubItems.Add(folderMame);
                 newItem.SubItems.Add(GetFileSize(fileInfo.Length));
-                newItem.SubItems.Add(fileInfo.LastWriteTime.ToString());
+                // 리스튜뷰에 아이템 추가
                 NovelListView.Items.Add(newItem);
 
                 novelFileInfos.Add(fileInfo.Name, fileInfo);
@@ -172,6 +202,8 @@ namespace AutoNovelMover
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.ShowDialog();
             targetDir.Text = dialog.SelectedPath;
+            // 타겟폴더를 저장합니다.
+            WritePrivateProfileString("Folder", "SelectedPath", targetDir.Text, "./Parameter.ini");
         }
 
         private void AutoCopyStart_Click(object sender, EventArgs e)
@@ -204,6 +236,10 @@ namespace AutoNovelMover
                     copyThread.Start();
                     working = true;
                 }
+                else
+                {
+                    MessageBox.Show("유효하지 않은 복사 디렉토리 입니다.", "자동 복사 에러");
+                }
             }
             catch (Exception ex)
             {
@@ -220,13 +256,18 @@ namespace AutoNovelMover
         {
             if (copyProgressBar.InvokeRequired)
             {
-                // 콜백 생성
-                SetProgCallBack callback = new SetProgCallBack(SetProgBar);
-                Invoke(callback, new object[] { value });
+                if (copyThread.IsAlive)
+                {
+                    // 콜백 생성
+                    SetProgCallBack callback = new SetProgCallBack(SetProgBar);
+                    Invoke(callback, new object[] { value });
+                }
             }
             else
             {
                 copyProgressBar.Value = value;
+                progressText.Text = string.Format("{0} / {1} ({2}%)", value, novelFileInfos.Count,
+                    (int)((float)value / (float)novelFileInfos.Count * 100f));
             }
         }
 
@@ -294,6 +335,8 @@ namespace AutoNovelMover
             novelFileInfos.Clear();
             NovelListView.Items.Clear();
             LogListview.Items.Clear();
+
+            progressText.Text = "0 / 0 (0%)";
         }
 
         /// <summary>
@@ -326,6 +369,17 @@ namespace AutoNovelMover
                 menu.MenuItems.Add(removeItem);
                 menu.Show(NovelListView, new Point(e.X, e.Y));
             }
+        }
+
+        private void AutoNovelMover_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (copyThread != null && copyThread.IsAlive)
+            {
+                copyThread.Abort();
+            }
+
+            // 타겟폴더를 저장합니다.
+            WritePrivateProfileString("Folder", "SelectedPath", targetDir.Text, "./Parameter.ini");
         }
     }
 }
