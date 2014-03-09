@@ -99,6 +99,8 @@ namespace AutoNovelMover
 
                     foreach (string fileName in files)
                     {
+                        if (novelFileInfos.ContainsKey(fileName)) { continue; }
+
                         // 디렉토리면 디렉토리에 맞게 처리
                         if (Directory.Exists(fileName))
                         {
@@ -124,7 +126,9 @@ namespace AutoNovelMover
                     }
 
                     NovelListView.EndUpdate();
-
+                    // 자동 스크롤
+                    NovelListView.Items[NovelListView.Items.Count - 1].EnsureVisible();
+                    // 진행률에 현재 추가된 소설 수 갱신
                     progressText.Text = string.Format("0 / {0} (0%)", novelFileInfos.Count);
                 }
             }
@@ -142,7 +146,7 @@ namespace AutoNovelMover
         {
             // 파일의 정보를 읽어온다.
             FileInfo fileInfo = new FileInfo(fileName);
-            if (novelFileInfos.ContainsKey(fileName) == false)
+            if (novelFileInfos.ContainsKey(fileInfo.Name) == false)
             {
                 // 새로운 리스트 아이템 구성
                 ListViewItem newItem = new ListViewItem((novelFileInfos.Count + 1).ToString());
@@ -158,6 +162,14 @@ namespace AutoNovelMover
                 NovelListView.Items.Add(newItem);
 
                 novelFileInfos.Add(fileInfo.Name, fileInfo);
+            }
+            else
+            {
+                ListViewItem newItem = new ListViewItem((LogListview.Items.Count + 1).ToString());
+                newItem.SubItems.Add(string.Format("[{0}] 소설을 중복추가 하였습니다. 무시처리 됩니다.", fileInfo.Name));
+                LogListview.Items.Add(newItem);
+                // 자동 스크롤
+                LogListview.Items[LogListview.Items.Count - 1].EnsureVisible();
             }
         }
 
@@ -314,6 +326,8 @@ namespace AutoNovelMover
                         ListViewItem newItem = new ListViewItem((LogListview.Items.Count + 1).ToString());
                         newItem.SubItems.Add(ex.Message);
                         LogListview.Items.Add(newItem);
+                        // 자동 스크롤
+                        LogListview.Items[LogListview.Items.Count - 1].EnsureVisible();
                     }
 
                     // 진행률 표시
@@ -321,7 +335,7 @@ namespace AutoNovelMover
                 }
 
                 working = false;
-                MessageBox.Show(string.Format("모든 소설을 [{0}] 폴더내에 각각 복사하였습니다.", dirInfo.FullName));
+                MessageBox.Show(string.Format("모든 소설을 [{0}] 폴더내에 복사하였습니다.", dirInfo.FullName));
             }
         }
 
