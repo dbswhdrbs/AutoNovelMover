@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.Reflection;
+using System.Net;
 
 namespace AutoNovelMover
 {
@@ -83,8 +84,35 @@ namespace AutoNovelMover
             StringBuilder tmpRetVal = new StringBuilder(2000);
             GetPrivateProfileString("Folder", "SelectedPath", "", tmpRetVal, 2000, "./Parameter.ini");
             targetDir.Text = tmpRetVal.ToString();
-
+            // 제목 갱신
             RefreshFormTitle();
+            // 버전 체크
+            CheckVersion();
+        }
+
+        private void CheckVersion()
+        {
+            WebClient webClient = new WebClient();
+            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(VersionFileDownCompleted);
+            webClient.DownloadFileAsync(new Uri("https://raw.github.com/dbswhdrbs/AutoNovelMover/master/Version.txt"), @"./Version.txt");
+        }
+
+        private void VersionFileDownCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            try
+            {
+                string version = System.IO.File.ReadAllText(@"./Version.txt");
+                Version checkVersion = new Version(version);
+                if (Assembly.GetEntryAssembly().GetName().Version != checkVersion)
+                {
+                    MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}",
+                        Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크");
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show(except.ToString());
+            }
         }
 
         /// <summary>
@@ -457,6 +485,23 @@ namespace AutoNovelMover
 
             // 타겟폴더를 저장합니다.
             WritePrivateProfileString("Folder", "SelectedPath", targetDir.Text, "./Parameter.ini");
+        }
+
+        /// <summary>
+        /// 소설리스트를 CTRL + A로 전체선택 가능하도록 지원
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NovelListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.A && e.Control)
+            {
+                NovelListView.MultiSelect = true;
+                foreach (ListViewItem item in NovelListView.Items)
+                {
+                    item.Selected = true;
+                }
+            }
         }
     }
 }

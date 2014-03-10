@@ -51,6 +51,7 @@
             this.NovelListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.NovelListView_DragDrop);
             this.NovelListView.DragOver += new System.Windows.Forms.DragEventHandler(this.NovelListView_DragOver);
             this.NovelListView.QueryContinueDrag += new System.Windows.Forms.QueryContinueDragEventHandler(this.NovelListView_QueryContinueDrag);
+            this.NovelListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NovelListView_KeyDown);
             this.NovelListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.NovelListView_MouseClick);
             // 
             // label1
