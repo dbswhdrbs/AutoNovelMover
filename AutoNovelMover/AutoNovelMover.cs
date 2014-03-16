@@ -107,7 +107,7 @@ namespace AutoNovelMover
             try
             {
                 // 버전은 GitHub에서 받아온다.
-                System.IO.StreamReader file = new StreamReader(@"./Version.txt");
+                System.IO.StreamReader file = new StreamReader(@"./Version.txt", Encoding.Default);
                 if (file == null) { return; }
 
                 string version = file.ReadLine();
@@ -118,12 +118,12 @@ namespace AutoNovelMover
 
                 if (Assembly.GetEntryAssembly().GetName().Version != checkVersion && string.IsNullOrEmpty(udpateWeb) == false)
                 {
-                    //if (MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}\n새버전을 다운받으시겠습니까?\n(브라우저 다운로드폴더에 받아집니다.)",
-                    //    Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크",
-                    //    MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == System.Windows.Forms.DialogResult.Yes)
+                    if (MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}\n새버전을 다운받으시겠습니까?\n(브라우저 다운로드폴더에 받아집니다.)",
+                        Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == System.Windows.Forms.DialogResult.Yes)
                     {
                         // TODO: 저장장소를 못구해서, 버전올릴때마다 따로 올려주고 주소를 갱신해줘야한다.
-                        //System.Diagnostics.Process.Start(udpateWeb);
+                        System.Diagnostics.Process.Start(udpateWeb);
                         MessageBox.Show(udpateList);
                     }
                 }
