@@ -90,10 +90,15 @@ namespace AutoNovelMover
             CheckVersion();
         }
 
+        /// <summary>
+        /// 버전을 체크하고 최신버전을 갱신합니다.
+        /// 버전체크는 GitHub에서 받아서 갱신하며, 최신파일은 임의의 장소에 올려서 받습니다.
+        /// </summary>
         private void CheckVersion()
         {
             WebClient webClient = new WebClient();
             webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(VersionFileDownCompleted);
+            // 버전은 GitHub에서 받아온다.
             webClient.DownloadFileAsync(new Uri("https://raw.github.com/dbswhdrbs/AutoNovelMover/master/Version.txt"), @"./Version.txt");
         }
 
@@ -101,13 +106,26 @@ namespace AutoNovelMover
         {
             try
             {
-                string version = System.IO.File.ReadAllText(@"./Version.txt");
+                // 버전은 GitHub에서 받아온다.
+                System.IO.StreamReader file = new StreamReader(@"./Version.txt");
+                if (file == null) { return; }
+
+                string version = file.ReadLine();
+                string udpateWeb = file.ReadLine();
                 Version checkVersion = new Version(version);
-                if (Assembly.GetEntryAssembly().GetName().Version != checkVersion)
+
+                if (Assembly.GetEntryAssembly().GetName().Version != checkVersion && string.IsNullOrEmpty(udpateWeb) == false)
                 {
-                    MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}",
-                        Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크");
+                    if (MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}\n새버전을 다운받으시겠습니까?\n(브라우저 다운로드폴더에 받아집니다.)",
+                        Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        // TODO: 저장장소를 못구해서, 버전올릴때마다 따로 올려주고 주소를 갱신해줘야한다.
+                        System.Diagnostics.Process.Start(udpateWeb);
+                    }
                 }
+                // 버전체크하고 버전파일은 지운다.
+                System.IO.File.Delete(@"./Version.txt");
             }
             catch (Exception except)
             {
