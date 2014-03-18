@@ -84,6 +84,10 @@ namespace AutoNovelMover
             StringBuilder tmpRetVal = new StringBuilder(2000);
             GetPrivateProfileString("Folder", "SelectedPath", "", tmpRetVal, 2000, "./Parameter.ini");
             targetDir.Text = tmpRetVal.ToString();
+            // 복사 / 이동 옵션 체크
+            GetPrivateProfileString("Option", "CopyOption", "", tmpRetVal, 2000, "./Parameter.ini");
+            CopyRadioBtn.Checked = tmpRetVal.ToString().Equals("COPY") || string.IsNullOrEmpty(tmpRetVal.ToString());
+            MoveRadioBtn.Checked = tmpRetVal.ToString().Equals("MOVE");
             // 제목 갱신
             RefreshFormTitle();
             // 버전 체크
@@ -116,7 +120,7 @@ namespace AutoNovelMover
 
                 Version checkVersion = new Version(version);
 
-                if (Assembly.GetEntryAssembly().GetName().Version != checkVersion && string.IsNullOrEmpty(udpateWeb) == false)
+                if (Assembly.GetEntryAssembly().GetName().Version > checkVersion && string.IsNullOrEmpty(udpateWeb) == false)
                 {
                     if (MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}\n새버전을 다운받으시겠습니까?\n(브라우저 다운로드폴더에 받아집니다.)",
                         Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크",
@@ -214,11 +218,15 @@ namespace AutoNovelMover
                 ListViewItem newItem = new ListViewItem((novelFileInfos.Count + 1).ToString());
                 newItem.SubItems.Add(fileInfo.Name);
                 // 파일확장자를 제외한 파일이름만 추출
-                string folderMame = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
-                int lastIndex = folderMame.LastIndexOf(" ");
-                folderMame = folderMame.Substring(0, lastIndex);
+                string convertFileName = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
+                int lastIndex = convertFileName.LastIndexOf(" ");
+                // 공백이 검색되지 않았을경우 파일명 그대로 넣는다.
+                if (lastIndex != -1)
+                {
+                    convertFileName = convertFileName.Substring(0, lastIndex);
+                }
                 // 복사될 폴더이름
-                newItem.SubItems.Add(folderMame);
+                newItem.SubItems.Add(convertFileName);
                 newItem.SubItems.Add(GetFileSize(fileInfo.Length));
                 // 리스튜뷰에 아이템 추가
                 NovelListView.Items.Add(newItem);
@@ -228,7 +236,7 @@ namespace AutoNovelMover
             else
             {
                 ListViewItem newItem = new ListViewItem((LogListview.Items.Count + 1).ToString());
-                newItem.SubItems.Add(string.Format("[{0}] 소설을 중복추가 하였습니다. 무시처리 됩니다.", fileInfo.Name));
+                newItem.SubItems.Add(string.Format("[{0}] 파일을 중복추가 하였습니다. 무시처리 됩니다.", fileInfo.Name));
                 LogListview.Items.Add(newItem);
                 // 자동 스크롤
                 LogListview.Items[LogListview.Items.Count - 1].EnsureVisible();
@@ -251,6 +259,11 @@ namespace AutoNovelMover
             }
         }
 
+        /// <summary>
+        /// byte를 실 용량사이즈로 변환합니다.
+        /// </summary>
+        /// <param name="byteCount"></param>
+        /// <returns></returns>
         private string GetFileSize(double byteCount)
         {
             string size = "0 Bytes";
@@ -362,7 +375,7 @@ namespace AutoNovelMover
                 if (NovelListView.Items.Count != novelFileInfos.Values.Count)
                 {
                     working = false;
-                    MessageBox.Show("소설 요소의 구성정보가 잘못되었습니다.");
+                    MessageBox.Show("파일 요소의 구성정보가 잘못되었습니다.");
                     return;
                 }
 
@@ -380,7 +393,14 @@ namespace AutoNovelMover
                     try
                     {
                         // 소설을 타겟폴더로 복사합니다.
-                        File.Copy(file.FullName, copyFile, true);
+                        if (CopyRadioBtn.Checked)
+                        {
+                            File.Copy(file.FullName, copyFile, true);
+                        }
+                        else
+                        {
+                            File.Move(file.FullName, copyFile);
+                        }
                         File.SetAttributes(copyFile, FileAttributes.Normal);
                     }
                     catch (Exception ex)
@@ -397,7 +417,7 @@ namespace AutoNovelMover
                 }
 
                 working = false;
-                MessageBox.Show(string.Format("모든 소설을 [{0}] 폴더내에 복사하였습니다.", dirInfo.FullName));
+                MessageBox.Show(string.Format("모든 파일을 [{0}] 폴더내에 복사하였습니다.", dirInfo.FullName));
             }
         }
 
@@ -499,6 +519,11 @@ namespace AutoNovelMover
                 copyProgressBar.Value, novelFileInfos.Count, novelProgressCounter, GetFileSize(totalLength));
         }
 
+        /// <summary>
+        /// 프로그램이 종료될때, 복사 스레드가 돌고있다면, 종료처리하고 타켓폴더를 저장합니다.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AutoNovelMover_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (copyThread != null && copyThread.IsAlive)
@@ -508,6 +533,9 @@ namespace AutoNovelMover
 
             // 타겟폴더를 저장합니다.
             WritePrivateProfileString("Folder", "SelectedPath", targetDir.Text, "./Parameter.ini");
+            // 복사/이동 옵션
+            string copyOption = CopyRadioBtn.Checked ? "COPY" : "MOVE";
+            WritePrivateProfileString("Option", "CopyOption", copyOption, "./Parameter.ini");
         }
 
         /// <summary>
@@ -524,6 +552,32 @@ namespace AutoNovelMover
                 {
                     item.Selected = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 복사 라디오 버튼 상태 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CopyRadioBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (CopyRadioBtn.Checked)
+            {
+                AutoCopyStart.Text = "자동 복사 시작";
+            }
+        }
+
+        /// <summary>
+        /// 이동 라디오 버튼 상태 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MoveRadioBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MoveRadioBtn.Checked)
+            {
+                AutoCopyStart.Text = "자동 이동 시작";
             }
         }
     }

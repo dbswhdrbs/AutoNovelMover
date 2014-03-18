@@ -38,6 +38,10 @@
             this.ClearBtn = new System.Windows.Forms.Button();
             this.LogListview = new System.Windows.Forms.ListView();
             this.progressTitle = new System.Windows.Forms.Label();
+            this.optionGroup = new System.Windows.Forms.GroupBox();
+            this.CopyRadioBtn = new System.Windows.Forms.RadioButton();
+            this.MoveRadioBtn = new System.Windows.Forms.RadioButton();
+            this.optionGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // NovelListView
@@ -59,20 +63,20 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 16);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(145, 12);
+            this.label1.Size = new System.Drawing.Size(117, 12);
             this.label1.TabIndex = 1;
-            this.label1.Text = "복사 타겟 디렉토리 경로 :";
+            this.label1.Text = "복사 디렉토리 경로 :";
             // 
             // targetDir
             // 
-            this.targetDir.Location = new System.Drawing.Point(163, 12);
+            this.targetDir.Location = new System.Drawing.Point(135, 12);
             this.targetDir.Name = "targetDir";
-            this.targetDir.Size = new System.Drawing.Size(216, 21);
+            this.targetDir.Size = new System.Drawing.Size(248, 21);
             this.targetDir.TabIndex = 2;
             // 
             // openFileDialog
             // 
-            this.openFileDialog.Location = new System.Drawing.Point(389, 12);
+            this.openFileDialog.Location = new System.Drawing.Point(389, 11);
             this.openFileDialog.Name = "openFileDialog";
             this.openFileDialog.Size = new System.Drawing.Size(89, 23);
             this.openFileDialog.TabIndex = 3;
@@ -82,7 +86,7 @@
             // 
             // AutoCopyStart
             // 
-            this.AutoCopyStart.Location = new System.Drawing.Point(249, 411);
+            this.AutoCopyStart.Location = new System.Drawing.Point(249, 458);
             this.AutoCopyStart.Name = "AutoCopyStart";
             this.AutoCopyStart.Size = new System.Drawing.Size(230, 34);
             this.AutoCopyStart.TabIndex = 4;
@@ -99,7 +103,7 @@
             // 
             // ClearBtn
             // 
-            this.ClearBtn.Location = new System.Drawing.Point(13, 411);
+            this.ClearBtn.Location = new System.Drawing.Point(13, 458);
             this.ClearBtn.Name = "ClearBtn";
             this.ClearBtn.Size = new System.Drawing.Size(230, 34);
             this.ClearBtn.TabIndex = 6;
@@ -125,12 +129,48 @@
             this.progressTitle.TabIndex = 8;
             this.progressTitle.Text = "진행 사항 :";
             // 
+            // optionGroup
+            // 
+            this.optionGroup.Controls.Add(this.MoveRadioBtn);
+            this.optionGroup.Controls.Add(this.CopyRadioBtn);
+            this.optionGroup.Location = new System.Drawing.Point(12, 409);
+            this.optionGroup.Name = "optionGroup";
+            this.optionGroup.Size = new System.Drawing.Size(466, 43);
+            this.optionGroup.TabIndex = 9;
+            this.optionGroup.TabStop = false;
+            this.optionGroup.Text = "복사 / 이동 옵션";
+            // 
+            // CopyRadioBtn
+            // 
+            this.CopyRadioBtn.AutoSize = true;
+            this.CopyRadioBtn.Checked = true;
+            this.CopyRadioBtn.Location = new System.Drawing.Point(10, 20);
+            this.CopyRadioBtn.Name = "CopyRadioBtn";
+            this.CopyRadioBtn.Size = new System.Drawing.Size(75, 16);
+            this.CopyRadioBtn.TabIndex = 0;
+            this.CopyRadioBtn.TabStop = true;
+            this.CopyRadioBtn.Text = "파일 복사";
+            this.CopyRadioBtn.UseVisualStyleBackColor = true;
+            this.CopyRadioBtn.CheckedChanged += new System.EventHandler(this.CopyRadioBtn_CheckedChanged);
+            // 
+            // MoveRadioBtn
+            // 
+            this.MoveRadioBtn.AutoSize = true;
+            this.MoveRadioBtn.Location = new System.Drawing.Point(91, 20);
+            this.MoveRadioBtn.Name = "MoveRadioBtn";
+            this.MoveRadioBtn.Size = new System.Drawing.Size(75, 16);
+            this.MoveRadioBtn.TabIndex = 1;
+            this.MoveRadioBtn.Text = "파일 이동";
+            this.MoveRadioBtn.UseVisualStyleBackColor = true;
+            this.MoveRadioBtn.CheckedChanged += new System.EventHandler(this.MoveRadioBtn_CheckedChanged);
+            // 
             // AutoNovelMover
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(491, 455);
+            this.ClientSize = new System.Drawing.Size(491, 500);
+            this.Controls.Add(this.optionGroup);
             this.Controls.Add(this.progressTitle);
             this.Controls.Add(this.LogListview);
             this.Controls.Add(this.ClearBtn);
@@ -149,6 +189,8 @@
             this.Text = "AutoNovelMover v1.4";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AutoNovelMover_FormClosing);
             this.Load += new System.EventHandler(this.AutoNovelMover_Load);
+            this.optionGroup.ResumeLayout(false);
+            this.optionGroup.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -165,6 +207,9 @@
         private System.Windows.Forms.Button ClearBtn;
         private System.Windows.Forms.ListView LogListview;
         private System.Windows.Forms.Label progressTitle;
+        private System.Windows.Forms.GroupBox optionGroup;
+        private System.Windows.Forms.RadioButton MoveRadioBtn;
+        private System.Windows.Forms.RadioButton CopyRadioBtn;
     }
 }
 
