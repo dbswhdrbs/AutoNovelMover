@@ -120,7 +120,7 @@ namespace AutoNovelMover
 
                 Version checkVersion = new Version(version);
 
-                if (Assembly.GetEntryAssembly().GetName().Version > checkVersion && string.IsNullOrEmpty(udpateWeb) == false)
+                if (Assembly.GetEntryAssembly().GetName().Version < checkVersion && string.IsNullOrEmpty(udpateWeb) == false)
                 {
                     if (MessageBox.Show(string.Format("현재 버전과 웹에 등록된 버전이 다릅니다.\n현재 버전 : {0}, 체크된 버전 : {1}\n새버전을 다운받으시겠습니까?\n(브라우저 다운로드폴더에 받아집니다.)",
                         Assembly.GetEntryAssembly().GetName().Version.ToString(), checkVersion.ToString()), "버전 체크",
@@ -417,7 +417,8 @@ namespace AutoNovelMover
                 }
 
                 working = false;
-                MessageBox.Show(string.Format("모든 파일을 [{0}] 폴더내에 복사하였습니다.", dirInfo.FullName));
+                string result = string.Format("모든 파일을 [{0}] 폴더내에 {1}하였습니다.", dirInfo.FullName, CopyRadioBtn.Checked ? "복사" : "이동");
+                MessageBox.Show(result);
             }
         }
 
